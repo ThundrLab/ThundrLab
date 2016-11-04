@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="374" height="50" viewBox="0 0 374 50">
+  <defs>
+    <style>
+      .cls-1 {
+        font-size: 16px;
+        text-anchor: middle;
+        fill: #2c3e50;
+        font-family: Exo;
+        font-weight: 800;
+      }
+
+      .cls-2 {
+        fill: #fff;
+      }
+    </style>
+  </defs>
+  <text id="THUNDRLAB" class="cls-1" transform="translate(186.346 48.896) scale(4.104)"><tspan x="0">THUNDR<tspan class="cls-2">LAB</tspan></tspan></text>
+</svg>
