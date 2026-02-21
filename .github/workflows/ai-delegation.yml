@@ -1,0 +1,52 @@
+name: AI Delegation Pipeline (Opus 4.6)
+
+# Phase 1: Define (The Trigger)
+# This workflow only runs when a human adds the 'ai-delegation-ready' label to an issue.
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  delegate-and-develop:
+    if: github.event.label.name == 'ai-delegation-ready'
+    runs-on: ubuntu-latest
+    
+    # Critical: Grant the agent the exact permissions it needs, and nothing more.
+    permissions:
+      contents: write       # To create branches and push code
+      pull-requests: write  # To open the PR for the human Reviewer
+      issues: write         # To comment updates back on the issue
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Required for the agent to understand full repo context
+
+      # Phase 2 & 3: Delegate & Develop (The Orchestrator)
+      - name: Execute Claude Code Agent
+        uses: anthropics/claude-code-action@v1
+        with:
+          # Securely inject tokens via GitHub Secrets
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          
+          # The Master Context Payload: Dynamically pulling the issue body
+          prompt: |
+            ROLE: Lead Backend Architecture Agent
+            OBJECTIVE: Implement the requirements defined in Issue #${{ github.event.issue.number }}.
+            
+            CONTEXT FROM DEFINER: 
+            ${{ github.event.issue.body }}
+            
+            EXECUTION INSTRUCTIONS:
+            1. Create a new branch named `ai-feature/issue-${{ github.event.issue.number }}`.
+            2. Write the code exactly according to the architecture spec in the issue.
+            3. Run local tests to ensure stability.
+            4. Commit your changes and open a Draft Pull Request against the `main` branch.
+            5. Tag the issue author as a Reviewer on the PR.
+            
+            Strictly follow the security and style guardrails defined in our repository's CLAUDE.md file. Do not merge to main.
+            
+          # Configure the specific model and boundaries
+          claude_args: '--max-turns 15 --model claude-opus-4-6'
