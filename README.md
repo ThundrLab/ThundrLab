@@ -1,2 +1,2 @@
 # ThundrLab
-ThundrLab builds connected cloud &amp; mobile apps with JavaScript
+ThundrLab builds connected cloud &amp; mobile apps with AI
